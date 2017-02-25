@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 // in-game hud
 
-public class GameUI : MonoBehaviour {
+public class GameUI : GuiUtility {
     public static GameUI self;
 
     #region data structures
@@ -49,11 +49,11 @@ public class GameUI : MonoBehaviour {
     private List<ActionText> actionTexts = new List<ActionText>();
     // game over screen or something perhaps
 	private Texture2D failure;
-	private GUIStyle guiStyle = new GUIStyle();
 	private Font guiFont;
     private List<Rect> elementPositions = new List<Rect>();
     private static Transform destination;
     private GameObject player;
+    List<String> pauseMenuItems = new List<String>(){ "resume", "options", "quit"};
 
     private float distanceToEdgeOfDestination;
 
@@ -66,6 +66,7 @@ public class GameUI : MonoBehaviour {
     public GameObject arrowTowardsPlanetIcon;
     private GameObject arrow;
     private bool arrowInitialized = false;
+    private bool gamePaused = false;
 
     #endregion
     #region actiontext
@@ -125,12 +126,20 @@ public class GameUI : MonoBehaviour {
 
     void Start()
     {
-        guiFont = (Font)Resources.Load("GUI/kenvector_future", typeof(Font));
-        guiStyle.font = guiFont;
+        guiStyle.alignment = TextAnchor.UpperLeft;
+        guiStyle.wordWrap = false;
         self = this;
         player = GameObject.FindGameObjectWithTag("Player");
         arrow = Instantiate(arrowTowardsPlanetIcon);
-//        for(int i = 0; i < )
+    }
+
+    void Update()
+    {
+        if(Input.GetKey(KeyCode.P))
+        {
+            Time.timeScale = 0.0f;
+            gamePaused = true;
+        }
     }
 
 	// Use this for initialization
@@ -138,27 +147,52 @@ public class GameUI : MonoBehaviour {
     {
         DrawPlayerInfo();
         DrawActionTexts();
-        // if player dies
-        /*
-            // pause the game & draw the failure screen
-			Time.timeScale = 0;
-			if (GUI.Button (new Rect (Screen.width / 2 - 160, Screen.height / 2 - 140, 320, 280), failure)) {
-				Application.LoadLevel ("MainMenu");
-			}
-		}
-        */
+        if (gamePaused)
+            DrawPauseMenu();
     }
 
-    public float getHalfTextWidth(String text)
+    public void DrawPauseMenu()
     {
-        int fontsize = guiStyle.fontSize;
-        return (text.Length * fontsize) / 2;
-    }
+        guiStyle.normal.textColor = lightPurple;
+        guiStyle.fontSize = 24;
 
-    public float getFullTextWidth(String text)
-    {
-        int fontsize = guiStyle.fontSize;
-        return (text.Length * fontsize);
+        float startX = Screen.width / 3, startY = Screen.height / 8;
+        float endX = Screen.width / 3, endY = 3 * Screen.height / 4;
+
+
+        DrawQuad(new Rect(startX - 3, startY - 3, endX + 6, endY + 6), darkPurple);
+        DrawQuad(new Rect(startX, startY, endX, endY), Color.black);
+        float centerTitle = getHalfTextWidth("Game Title");
+        GUI.Label(new Rect(Screen.width / 2 - centerTitle, startY + 26, 100, 15), "Game Title", guiStyle);
+        guiStyle.fontSize = 20;
+        guiStyle.normal.textColor = Color.white;
+
+        float textCenterY = (Screen.height / 2) - ((40 * pauseMenuItems.Count) / 2);
+
+
+        for (int i = 0; i < pauseMenuItems.Count; i++)
+        {
+            if (GUI.Button(new Rect(Screen.width / 2 - centerTitle, textCenterY + i * 40 , 100, 15), pauseMenuItems[i], guiStyle))
+            {
+                switch (pauseMenuItems[i])
+                {
+                    case "resume":
+                        Time.timeScale = 1.0f;
+                        gamePaused = false;
+                        break;
+                    case "options":
+                        showOptions = true;
+                        break;
+                    case "quit":
+                        Application.LoadLevel("mainmenu");
+                        break;
+                }
+            }
+        }
+        if (showOptions)
+        {
+            drawOptionsMenu();
+        }
     }
 
     public void DrawPlayerInfo(/* player object */)
