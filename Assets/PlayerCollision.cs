@@ -17,6 +17,6 @@ public class PlayerCollision : MonoBehaviour {
 	void OnCollisionEnter (Collision other)
 	{
 		if (other.gameObject.tag == "Planet")
-			Debug.Log("Ouch");
+			GameUI.self.AddActionText("ouch", this.gameObject, Color.red);
 	}
 }
