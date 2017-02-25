@@ -46,8 +46,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Engine.cs" />
      <Compile Include="Assets\Gravity.cs" />
+     <Compile Include="Assets\Landing.cs" />
      <Compile Include="Assets\PlayerCollision.cs" />
+     <Compile Include="Assets\PlayerController.cs" />
+     <Compile Include="Assets\PlayerFollow.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
