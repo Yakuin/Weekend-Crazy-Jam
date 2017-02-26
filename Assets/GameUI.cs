@@ -53,7 +53,7 @@ public class GameUI : GuiUtility {
     private List<Rect> elementPositions = new List<Rect>();
     private static Transform destination;
     private GameObject player;
-    List<String> pauseMenuItems = new List<String>(){ "resume", "options", "quit"};
+    List<String> pauseMenuItems = new List<String>(){ "resume", "options", "restart", "quit"};
 
     private float distanceToEdgeOfDestination;
 
@@ -65,9 +65,13 @@ public class GameUI : GuiUtility {
     // the arrow which will point toward the target planet
     public GameObject arrowTowardsPlanetIcon;
     private GameObject arrow;
+    public float maxLerpTime = 5.0f;
     private bool arrowInitialized = false;
     private bool arrowIsGone = false;
     private bool gamePaused = false;
+    private float lerpTime = 0.0f;
+    private bool optionsUpdated = true;
+    private string selected = null;
 
     #endregion
     #region actiontext
@@ -136,10 +140,19 @@ public class GameUI : GuiUtility {
 
     void Update()
     {
-        if(Input.GetKey(KeyCode.P))
+        if(Input.GetKey(KeyCode.P) || Input.GetKey(KeyCode.Escape))
         {
             Time.timeScale = 0.0f;
             gamePaused = true;
+        }
+        if(gamePaused)
+        {
+            if (optionsUpdated == true && showOptions == false)
+            {
+                updateOptions(pauseMenuItems);
+                optionsUpdated = false;
+            }
+            selected = controls();
         }
     }
 
@@ -149,7 +162,11 @@ public class GameUI : GuiUtility {
         DrawPlayerInfo();
         DrawActionTexts();
         if (gamePaused)
+        {
             DrawPauseMenu();
+            if (selected != null)
+                GUI.FocusControl(selected);
+        }
     }
 
     public void DrawPauseMenu()
@@ -173,6 +190,7 @@ public class GameUI : GuiUtility {
 
         for (int i = 0; i < pauseMenuItems.Count; i++)
         {
+            GUI.SetNextControlName(pauseMenuItems[i]);
             if (GUI.Button(new Rect(Screen.width / 2 - centerTitle, textCenterY + i * 40 , 100, 15), pauseMenuItems[i], guiStyle))
             {
                 switch (pauseMenuItems[i])
@@ -183,8 +201,14 @@ public class GameUI : GuiUtility {
                         break;
                     case "options":
                         showOptions = true;
+                        optionsUpdated = true;
+                        break;
+                    case "restart":
+                        Time.timeScale = 1.0f;
+                        Application.LoadLevel(Application.loadedLevelName);
                         break;
                     case "quit":
+                        Time.timeScale = 1.0f;
                         Application.LoadLevel("activemainmenu");
                         break;
                 }
@@ -222,14 +246,22 @@ public class GameUI : GuiUtility {
             if(arrowInitialized == false)
             {
                 arrowIsGone = false;
+                lerpTime = 0.0f;
                 float a = arrow.GetComponent<Renderer>().GetComponent<SpriteRenderer>().color.a;
                 arrow.GetComponent<Renderer>().GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.MoveTowards(a, 1.0f, 0.3f * Time.deltaTime));
                 if (a == 1.0f)
                     arrowInitialized = true;
             }
             Vector3 prevPosition = arrow.transform.position;
-            
-            arrow.transform.position = Vector3.Lerp(prevPosition, player.transform.position + player.transform.up * 5f, Time.deltaTime);
+            if (lerpTime < maxLerpTime)
+            {
+                arrow.transform.position = Vector3.Lerp(prevPosition, player.transform.position + player.transform.up * 5f, Time.deltaTime);
+                lerpTime += Time.deltaTime;
+            }
+            else
+            {
+                arrow.transform.position = player.transform.position + player.transform.up * 5f;
+            }
             float angle = Mathf.Atan2(destination.position.y - arrow.transform.position.y, destination.position.x - arrow.transform.position.x) * Mathf.Rad2Deg;
             arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }

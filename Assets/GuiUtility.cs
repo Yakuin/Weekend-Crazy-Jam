@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public class GuiUtility : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class GuiUtility : MonoBehaviour
     public static bool showOptions = false;
     public static String soundToggle = "Sound On";
     public static GUIStyle guiStyle;
+    private static int selected = -1;
+    private static List<String> options;
+    public static bool pleaseUpdateOptions = true;
 
     public static Color lightPurple = new Color(0.6f, 0f, 0.6f);
     public static Color darkPurple = new Color(1f, 0f, 1f);
@@ -20,6 +24,29 @@ public class GuiUtility : MonoBehaviour
         screenWidth = setScreenWidth;
         screenHeight = setScreenHeight;
         fontSize = setFontSize;
+    }
+
+    public static void updateOptions(List<String> newOptions)
+    {
+        selected = -1;
+        options = newOptions;
+    }
+
+    public static String controls()
+    {
+        if(Input.GetKeyUp("down") || Input.GetKeyUp("s"))
+        {
+            if(selected + 1 < options.Count)
+                selected ++;
+        }
+        if (Input.GetKeyUp("up") || Input.GetKeyUp("w"))
+        {
+            if(selected - 1 > -1)
+                selected --;
+        }
+        if (selected < 0)
+            return null;
+        return options[selected];
     }
 
     public static float getHalfTextWidth(String text)
@@ -45,6 +72,7 @@ public class GuiUtility : MonoBehaviour
 
     public static void drawOptionsMenu()
     {
+        updateOptions(new List<String>() { "Got it.", "Sound" });
         bool prevWordWrap = guiStyle.wordWrap;
         TextAnchor prevTextAnchor = guiStyle.alignment;
         guiStyle.wordWrap = true;
@@ -55,12 +83,14 @@ public class GuiUtility : MonoBehaviour
         GUI.Label(new Rect(Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2),
             "This is where we put our controls.", guiStyle);
         guiStyle.normal.textColor = Color.white;
+        GUI.SetNextControlName("Got it.");
         if (GUI.Button(new Rect(Screen.width / 2 - 50, 7 * Screen.height / 8 - 50, 100, 50), "Got it.", guiStyle))
         {
             guiStyle.wordWrap = false;
             showOptions = false;
         }
-        else if (GUI.Button(new Rect(Screen.width / 4, 7 * Screen.height / 8 - 50, 150, 50), soundToggle, guiStyle))
+        GUI.SetNextControlName("Sound");
+        if (GUI.Button(new Rect(Screen.width / 4, 7 * Screen.height / 8 - 50, 150, 50), soundToggle, guiStyle))
         {
             if (soundToggle == "Sound On")
             {
