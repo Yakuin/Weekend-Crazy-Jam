@@ -17,6 +17,8 @@ public class Gravity : MonoBehaviour
 
 	void OnTriggerStay (Collider other)
 	{
+        if (other == null)
+            return;
 		var direction = -(other.attachedRigidbody.transform.position - transform.position);
         Debug.DrawLine(other.transform.position, other.transform.position + direction, Color.blue);
 		var distance = Vector3.Distance(other.transform.position, transform.position);

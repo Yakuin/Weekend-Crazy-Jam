@@ -25,13 +25,13 @@ public class GuiUtility : MonoBehaviour
     public static float getHalfTextWidth(String text)
     {
         int fontsize = fontSize;
-        return (text.Length * fontsize) / 2;
+        return ((text.Length) * fontsize) / 2;
     }
 
     public static float getFullTextWidth(String text)
     {
         int fontsize = fontSize;
-        return (text.Length * fontsize);
+        return ((text.Length) * fontsize);
     }
 
     public static void DrawQuad(Rect position, Color color)

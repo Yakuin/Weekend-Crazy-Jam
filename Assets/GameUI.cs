@@ -57,7 +57,7 @@ public class GameUI : GuiUtility {
 
     private float distanceToEdgeOfDestination;
 
-    private int colonistsRemaining = 3;
+    private int colonistsRemaining = 8;
 
     // Public
     // texture to show ships remaining
@@ -66,6 +66,7 @@ public class GameUI : GuiUtility {
     public GameObject arrowTowardsPlanetIcon;
     private GameObject arrow;
     private bool arrowInitialized = false;
+    private bool arrowIsGone = false;
     private bool gamePaused = false;
 
     #endregion
@@ -184,7 +185,7 @@ public class GameUI : GuiUtility {
                         showOptions = true;
                         break;
                     case "quit":
-                        Application.LoadLevel("mainmenu");
+                        Application.LoadLevel("activemainmenu");
                         break;
                 }
             }
@@ -202,10 +203,11 @@ public class GameUI : GuiUtility {
         guiStyle.fontSize = 16;
         // get player's fuel and draw it
         GUI.Label(new Rect(0, 0, 100, 100), "Fuel: 100%", guiStyle);
-        GUI.Label(new Rect(Screen.width / 2 - getHalfTextWidth("Colonists Remaining"), 0, 100, 100), "Colonists Remaining", guiStyle);
+        float centerXColonists = Screen.width / 2 - getHalfTextWidth("Colony Ships Remaining");
+        GUI.Label(new Rect(centerXColonists, 0, 100, 100), "Colony Ships Remaining", guiStyle);
         for (int i = 0; i < colonistsRemaining; i++)
         {
-            GUI.Label(new Rect(Screen.width / 2 - getHalfTextWidth("Colonists Remaining") + i * 20, 20, 100, 100), shipIcon);
+            GUI.Label(new Rect(centerXColonists + i * 15, 20, 100, 100), shipIcon);
         }
         GUI.Label(new Rect(Screen.width - getFullTextWidth("Planet 1/7"), 0, 100, 100), "Planet 1/7", guiStyle);
         DrawPlanetDestinationInfo();
@@ -219,25 +221,32 @@ public class GameUI : GuiUtility {
         {
             if(arrowInitialized == false)
             {
+                arrowIsGone = false;
                 float a = arrow.GetComponent<Renderer>().GetComponent<SpriteRenderer>().color.a;
                 arrow.GetComponent<Renderer>().GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.MoveTowards(a, 1.0f, 0.3f * Time.deltaTime));
                 if (a == 1.0f)
                     arrowInitialized = true;
             }
-            arrow.transform.position = player.transform.position + player.transform.up * 10f;
+            Vector3 prevPosition = arrow.transform.position;
+            
+            arrow.transform.position = Vector3.Lerp(prevPosition, player.transform.position + player.transform.up * 5f, Time.deltaTime);
             float angle = Mathf.Atan2(destination.position.y - arrow.transform.position.y, destination.position.x - arrow.transform.position.x) * Mathf.Rad2Deg;
             arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
         else
         {
             float a = arrow.GetComponent<Renderer>().GetComponent<SpriteRenderer>().color.a;
-            if(a != 0)
+            if (a != 0)
                 arrow.GetComponent<Renderer>().GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, Mathf.MoveTowards(a, 0.0f, 0.3f * Time.deltaTime));
+            else
+                arrowIsGone = true;
             arrowInitialized = false;
+            guiStyle.normal.textColor = new Color(1f,1f,1f,a);
         }
         Vector3 screenPlayerPos = Camera.main.WorldToScreenPoint(playerPos);
         guiStyle.fontSize = 8;
         String distInKm = (Vector3.Distance(playerPos, destination.position) * 1000f).ToString() + " km";
-        GUI.Label(new Rect(screenPlayerPos.x-distInKm.Length*3, screenPlayerPos.y+8, 100, 100), distInKm, guiStyle);
+        GUI.Label(new Rect(screenPlayerPos.x - distInKm.Length * 3, screenPlayerPos.y + 8, 100, 100), distInKm, guiStyle);
+        guiStyle.normal.textColor = new Color(1f, 1f, 1f, 1f);
     }
 }
