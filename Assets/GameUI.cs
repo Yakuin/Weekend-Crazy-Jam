@@ -57,8 +57,10 @@ public class GameUI : GuiUtility {
 
     private float distanceToEdgeOfDestination;
 
-    private int colonistsRemaining = 8;
-
+    public int colonistsRemaining = 8;
+	public double fuel = 100;
+	public int planetscore = 0;
+	
     // Public
     // texture to show ships remaining
     public Texture2D shipIcon;
@@ -226,14 +228,14 @@ public class GameUI : GuiUtility {
         guiStyle.normal.textColor = Color.white;
         guiStyle.fontSize = 16;
         // get player's fuel and draw it
-        GUI.Label(new Rect(0, 0, 100, 100), "Fuel: 100%", guiStyle);
+        GUI.Label(new Rect(0, 0, 100, 100), "Fuel: " + (int)fuel + "%", guiStyle);
         float centerXColonists = Screen.width / 2 - getHalfTextWidth("Colony Ships Remaining");
         GUI.Label(new Rect(centerXColonists, 0, 100, 100), "Colony Ships Remaining", guiStyle);
         for (int i = 0; i < colonistsRemaining; i++)
         {
             GUI.Label(new Rect(centerXColonists + i * 15, 20, 100, 100), shipIcon);
         }
-        GUI.Label(new Rect(Screen.width - getFullTextWidth("Planet 1/7"), 0, 100, 100), "Planet 1/7", guiStyle);
+        GUI.Label(new Rect(Screen.width - getFullTextWidth("Planet " + planetscore + "/4"), 0, 100, 100), "Planet " + planetscore + "/4", guiStyle);
         DrawPlanetDestinationInfo();
     }
 

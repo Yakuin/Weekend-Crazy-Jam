@@ -81,7 +81,7 @@ public class GuiUtility : MonoBehaviour
         guiStyle.alignment = TextAnchor.MiddleCenter;
         guiStyle.normal.textColor = lightPurple;
         GUI.Label(new Rect(Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2),
-            "This is where we put our controls.", guiStyle);
+            "Controls\nup,down,left,right accelerate.", guiStyle);
         guiStyle.normal.textColor = Color.white;
         GUI.SetNextControlName("Got it.");
         if (GUI.Button(new Rect(Screen.width / 2 - 50, 7 * Screen.height / 8 - 50, 100, 50), "Got it.", guiStyle))

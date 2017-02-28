@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Engine : MonoBehaviour {
 
+	public int lives;
+	public int fuel;
+	private int score;
+	
 	// Use this for initialization
 	void Start () {
 		

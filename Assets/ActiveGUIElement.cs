@@ -78,7 +78,7 @@ public class ActiveGUIElement : GuiUtility {
         DrawQuad(new Rect(Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), Color.black);
         guiStyle.alignment = TextAnchor.MiddleCenter;
         guiStyle.normal.textColor = lightPurple;
-        GUI.Label(new Rect(Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), "This is where we talk about ourselves!", guiStyle);
+        GUI.Label(new Rect(Screen.width / 4, Screen.height / 4, Screen.width / 2, Screen.height / 2), "Created by Yakuin, Agata and Mike for Weekend Crazy Jam.", guiStyle);
         guiStyle.normal.textColor = Color.white;
         guiStyle.wordWrap = false;
         if (GUI.Button(new Rect(Screen.width / 2 - 50, 3 * Screen.height / 4 - 50, 100, 50), "Cool.", guiStyle))
